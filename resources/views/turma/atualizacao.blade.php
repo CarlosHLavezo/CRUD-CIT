@@ -7,6 +7,15 @@
             <div class="card-header">Edição de Turma(s)</div>
 
             <div class="card-body">
+                @if ($errors->any())
+                    <div class="alert alert-danger">
+                        <ul>
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
                 <form action="{{ route('turma.salvar') }}" method="POST">
                     @csrf
                     <input type="hidden" name="id" value="{{ $turma->id }}">

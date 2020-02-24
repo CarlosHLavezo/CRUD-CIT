@@ -10,6 +10,7 @@ use App\{
     Inscricao
 };
 use App\Service\InscricaoService;
+use App\Http\Requests\InscreverRequest;
 
 class InscricaoController extends Controller
 {
@@ -23,7 +24,7 @@ class InscricaoController extends Controller
         $this->inscricaoService = $inscricaoService;
     }
 
-    public function inscreverPeloAluno(Request $request)
+    public function inscreverPeloAluno(InscreverRequest $request)
     {
         $params = collect($request->all());
         if (!$this->inscricaoService->inscricaoExiste($params)) {
@@ -72,7 +73,7 @@ class InscricaoController extends Controller
         return redirect(route('inscricao.peloAluno', ['idAluno' => $idAluno]));
     }
 
-    public function inscreverPelaTurma(Request $request)
+    public function inscreverPelaTurma(InscreverRequest $request)
     {
         $params = collect($request->all());
         if (!$this->inscricaoService->inscricaoExiste($params)) {

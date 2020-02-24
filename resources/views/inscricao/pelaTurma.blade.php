@@ -9,6 +9,15 @@
         <div class="col-md-8">
             <div class="card">
                 <div class="card-body">
+                    @if ($errors->any())
+                        <div class="alert alert-danger">
+                            <ul>
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
                     <form action="{{ route('inscricao.inscreverPelaTurma') }}" method="POST">
                         @csrf
                         <input type="hidden" name="turma_id" value="{{ $turma->id }}">
