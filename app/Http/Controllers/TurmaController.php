@@ -2,26 +2,34 @@
 
 namespace App\Http\Controllers;
 
-use App\Turma;
-use App\Service\TurmaService;
-use App\Http\Requests\TurmaSalvarRequest;
-use App\Http\Requests\TurmaAtualizarRequest;
+use App\Service\{
+    TurmaService,
+    AlunoService
+};
+use App\Http\Requests\{
+    TurmaSalvarRequest,
+    TurmaAtualizarRequest
+};
 
 class TurmaController extends Controller
 {
 
     private $turmaService;
 
-    public function __construct(TurmaService $turmaService)
+    public function __construct(TurmaService $turmaService, AlunoService $alunoService)
     {
         $this->middleware('auth');
 
         $this->turmaService = $turmaService;
+        $this->alunoService = $alunoService;
     }
 
     public function listagem()
     {
-        return view('turma/listagem', ['turmas' => Turma::all()]);
+        return view(
+            'turma/listagem',
+            ['turmas' => $this->turmaService->consultarTodas()]
+        );
     }
 
     public function cadastro()
@@ -38,8 +46,10 @@ class TurmaController extends Controller
 
     public function atualizacao($id)
     {
-        $turma = Turma::find($id);
-        return view('turma/atualizacao', ['turma' => $turma]);
+        return view(
+            'turma/atualizacao',
+            ['turma' => $this->turmaService->consultarPeloID($id)]
+        );
     }
 
     public function atualizar(TurmaAtualizarRequest $request)
@@ -51,8 +61,7 @@ class TurmaController extends Controller
 
     public function excluir($id)
     {
-        $turma = Turma::find($id);
-        $turma->delete();
+        $this->turmaService->excluir($id);
 
         return redirect(route('turma.listagem'));
     }

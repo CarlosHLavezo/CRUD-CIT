@@ -6,35 +6,38 @@ use App\Http\Requests\{
     AlunoSalvarRequest,
     AlunoAtualizarRequest
 };
-use App\{
-    Aluno,
-    Turma
+use App\Service\{
+    AlunoService,
+    TurmaService
 };
-
-use App\Service\AlunoService;
 
 class AlunoController extends Controller
 {
 
     private $alunoService;
+    private $turmaService;
 
-    public function __construct(AlunoService $alunoService)
+    public function __construct(AlunoService $alunoService, TurmaService $turmaService)
     {
         $this->middleware('auth');
 
         $this->alunoService = $alunoService;
+        $this->turmaService = $turmaService;
     }
 
     public function listagem()
     {
-        $alunos = Aluno::all();
-
-        return view('aluno/listagem', ['alunos' => $alunos]);
+        return view(
+            'aluno/listagem',
+            ['alunos' => $this->alunoService->consultartodos()]);
     }
 
     public function cadastro()
     {
-        return view('aluno/cadastro', ['turmas' => Turma::all()]);
+        return view(
+            'aluno/cadastro',
+            ['turmas' => $this->turmaService->consultarTodas()]
+        );
     }
 
     public function salvar(AlunoSalvarRequest $request)
@@ -46,8 +49,13 @@ class AlunoController extends Controller
 
     public function atualizacao($id)
     {
-        $aluno = Aluno::find($id);
-        return view('aluno/atualizacao', ['aluno' => $aluno, 'turmas' => Turma::all()]);
+        return view(
+            'aluno/atualizacao',
+            [
+                'aluno' => $this->alunoService->consultarPeloID($id),
+                'turmas' => $this->turmaService->consultarTodas()
+            ]
+        );
     }
 
     public function atualizar(AlunoAtualizarRequest $request)
@@ -59,8 +67,7 @@ class AlunoController extends Controller
 
     public function excluir($id)
     {
-        $aluno = Aluno::find($id);
-        $aluno->delete();
+        $this->alunoService->excluir($id);
 
         return redirect(route('aluno.listagem'));
     }

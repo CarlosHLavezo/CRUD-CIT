@@ -23,4 +23,19 @@ class TurmaService {
         $this->turma->save();
     }
 
+    public function consultarPeloID($id)
+    {
+        return Turma::find($id);
+    }
+
+    public function consultarTodas()
+    {
+        return Turma::all();
+    }
+
+    public function excluir($id)
+    {
+        $turma = Turma::find($id);
+        $turma->delete();
+    }
 }

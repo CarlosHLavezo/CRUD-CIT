@@ -26,4 +26,21 @@ class AlunoService {
 
         $this->aluno->save();
     }
+
+    public function consultarPeloID($id)
+    {
+        return Aluno::find($id);
+    }
+
+    public function consultartodos()
+    {
+        return Aluno::all();
+    }
+
+    public function excluir($id)
+    {
+        $aluno = Aluno::find($id);
+        $aluno->delete();
+    }
+
 }
