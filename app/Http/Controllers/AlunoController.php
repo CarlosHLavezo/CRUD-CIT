@@ -2,19 +2,27 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Http\Requests\{
+    AlunoSalvarRequest,
+    AlunoAtualizarRequest
+};
 use App\{
     Aluno,
     Turma
 };
-use Carbon\Carbon;
+
+use App\Service\AlunoService;
 
 class AlunoController extends Controller
 {
 
-    public function __construct()
+    private $alunoService;
+
+    public function __construct(AlunoService $alunoService)
     {
         $this->middleware('auth');
+
+        $this->alunoService = $alunoService;
     }
 
     public function listagem()
@@ -29,24 +37,22 @@ class AlunoController extends Controller
         return view('aluno/cadastro', ['turmas' => Turma::all()]);
     }
 
+    public function salvar(AlunoSalvarRequest $request)
+    {
+        $this->alunoService->salvar(collect($request->all()));
+
+        return redirect(route('aluno.listagem'));
+    }
+
     public function atualizacao($id)
     {
         $aluno = Aluno::find($id);
         return view('aluno/atualizacao', ['aluno' => $aluno, 'turmas' => Turma::all()]);
     }
 
-    public function salvar(Request $request)
+    public function atualizar(AlunoAtualizarRequest $request)
     {
-        if (!empty($request->input('id')) && is_numeric($request->input('id'))) {
-            $aluno = Aluno::find($request->input('id'));
-        } else {
-            $aluno = new Aluno();
-        }
-        $aluno->nome = $request->input('nome');
-        $aluno->sexo = $request->input('sexo');
-        $data_nasc = Carbon::createFromFormat('d/m/Y', $request->input('data_nascimento'));
-        $aluno->data_nascimento = $data_nasc->format('Y-m-d');
-        $aluno->save();
+        $this->alunoService->salvar(collect($request->all()));
 
         return redirect(route('aluno.listagem'));
     }

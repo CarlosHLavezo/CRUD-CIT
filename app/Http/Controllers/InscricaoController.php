@@ -9,29 +9,25 @@ use App\{
     Turma,
     Inscricao
 };
+use App\Service\InscricaoService;
 
 class InscricaoController extends Controller
 {
 
-    public function __construct()
+    private $inscricaoService;
+
+    public function __construct(InscricaoService $inscricaoService)
     {
         $this->middleware('auth');
+
+        $this->inscricaoService = $inscricaoService;
     }
 
     public function inscreverPeloAluno(Request $request)
     {
-        $inscricaoExiste = Inscricao::where('turma_id', $request->input('turma_id'))
-            ->where('aluno_id', $request->input('aluno_id'))
-            ->get();
-
-        if ($inscricaoExiste->count() == 0) {
-
-            $inscricao = new Inscricao();
-
-            $inscricao->aluno_id = $request->input('aluno_id');
-            $inscricao->turma_id = $request->input('turma_id');
-
-            $inscricao->save();
+        $params = collect($request->all());
+        if (!$this->inscricaoService->inscricaoExiste($params)) {
+            $this->inscricaoService->inscrever($params);
         }
 
         return redirect(route('inscricao.peloAluno', ['idAluno' => $request->input('aluno_id')]));
@@ -78,18 +74,9 @@ class InscricaoController extends Controller
 
     public function inscreverPelaTurma(Request $request)
     {
-        $inscricaoExiste = Inscricao::where('turma_id', $request->input('turma_id'))
-            ->where('aluno_id', $request->input('aluno_id'))
-            ->get();
-
-        if ($inscricaoExiste->count() == 0) {
-
-            $inscricao = new Inscricao();
-
-            $inscricao->aluno_id = $request->input('aluno_id');
-            $inscricao->turma_id = $request->input('turma_id');
-
-            $inscricao->save();
+        $params = collect($request->all());
+        if (!$this->inscricaoService->inscricaoExiste($params)) {
+            $this->inscricaoService->inscrever($params);
         }
 
         return redirect(route('inscricao.pelaTurma', ['idTurma' => $request->input('turma_id')]));

@@ -3,14 +3,20 @@
 namespace App\Http\Controllers;
 
 use App\Turma;
-use Illuminate\Http\Request;
+use App\Service\TurmaService;
+use App\Http\Requests\TurmaSalvarRequest;
+use App\Http\Requests\TurmaAtualizarRequest;
 
 class TurmaController extends Controller
 {
 
-    public function __construct()
+    private $turmaService;
+
+    public function __construct(TurmaService $turmaService)
     {
         $this->middleware('auth');
+
+        $this->turmaService = $turmaService;
     }
 
     public function listagem()
@@ -23,20 +29,22 @@ class TurmaController extends Controller
         return view('turma/cadastro');
     }
 
+    public function salvar(TurmaSalvarRequest $request)
+    {
+        $this->turmaService->salvar(collect($request->all()));
+
+        return redirect(route('turma.listagem'));
+    }
+
     public function atualizacao($id)
     {
         $turma = Turma::find($id);
         return view('turma/atualizacao', ['turma' => $turma]);
     }
 
-    public function salvar(Request $request)
+    public function atualizar(TurmaAtualizarRequest $request)
     {
-        $turma = !empty($request->input('id')) && is_numeric($request->input('id'))
-            ? Turma::find($request->input('id'))
-            : new Turma();
-
-        $turma->nome = $request->input('nome');
-        $turma->save();
+        $this->turmaService->salvar(collect($request->all()));
 
         return redirect(route('turma.listagem'));
     }
